@@ -8,7 +8,7 @@
                 <p>{{value.length }}/{{maxLength}}</p>
             </div>
             <div class="button flex">
-                <button class="rounded-lg bg-red-800 p-2" v-if="buttonCancel">Cencel</button>
+                <button class="rounded-lg bg-red-800 p-2 mr-2" v-if="closed" >Cencel</button>
                 <button class="rounded-lg bg-green-800 p-2 disabled:bg-red-100 disabled:text-white" :disabled="isDisabled" @click.prevent="pushNewData">Submit</button>
             </div>
         </div>
@@ -22,13 +22,20 @@ export default {
         return{
             maxLength: 10,
             value:'',
-            buttonCancel: false
         }
     },
-
+    props:{
+        closed: {
+            type: Boolean,
+            default: false,
+        },
+    },
     computed:{
         isDisabled(){ 
             return this.value.length > this.maxLength || this.value.length == "" ? true : false;
+        },
+        activeCancel(){
+            return this.$emit()
         }
     },
 
@@ -42,9 +49,6 @@ export default {
             this.$refs.form.reset()
             this.value = ""
         },
-        newCancel(){
-            this.$emit("showCancelButton", this.buttonCancel)
-        }
     }
 }
 </script>
