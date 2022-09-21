@@ -27,17 +27,17 @@
             love: 'false',
             retweet: 0,
             showInput : false,
-            reply : 
-              {
-                user:{
+            reply : [
+            {
                   fullName:'Rimuru',
                   userName:'@rimuru',
                   tweet: 'Lorem ipsum, dolor sit amet consectetur adipisicing elit.',
                   retweet: 1,
                   likes: 3,
                   love: "false"
-                },
               }
+            ]
+
             ,
           },
           {
@@ -49,17 +49,17 @@
             love: "false",
             retweet:1,
             showInput:false,
-            reply:
-              {
-                user:{
+            reply:[
+            {
                   fullName:'Kuuga',
                   userName:'@Kg',
                   tweet: 'Lorem ipsum, dolor sit amet consectetur adipisicing elit.',
                   retweet: 2,
                   likes: 10,
                   love: "false"
-                },
               }
+            ]
+          
           },
         ],
       }
@@ -88,10 +88,11 @@
       })
     },
 
-    commentHandle( data,index){
+    commentHandle(data,index){
+      console.log(index)
       this.user[index].reply.push({
-        fullName: this.user[index].reply.fullName,
-        userName: this.user[index].userName,
+        fullName: this.profile.fullName,
+        userName: this.profile.userName,
         tweet: data,
         love:"false",
         like: 0,
@@ -122,7 +123,7 @@
       <h2 class="font-bold">Feeds</h2>
 
       <tweetCard 
-        @commentHandle="commentHandle"
+        @comment="commentHandle"
         v-for="(feeds, index) in this.user"
         :feeds="feeds"
         :index="index"

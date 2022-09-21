@@ -8,7 +8,7 @@
                 <p>{{value.length }}/{{maxLength}}</p>
             </div>
             <div class="button flex">
-                <button class="rounded-lg bg-red-800 p-2 mr-2" v-if="closed" >Cencel</button>
+                <button class="rounded-lg bg-red-800 p-2 mr-2" v-if="closed" @click.prevent="activeCancel">Cencel</button>
                 <button class="rounded-lg bg-green-800 p-2 disabled:bg-red-100 disabled:text-white" :disabled="isDisabled" @click.prevent="pushNewData">Submit</button>
             </div>
         </div>
@@ -29,14 +29,13 @@ export default {
             type: Boolean,
             default: false,
         },
+        id: Number,
     },
     computed:{
         isDisabled(){ 
             return this.value.length > this.maxLength || this.value.length == "" ? true : false;
         },
-        activeCancel(){
-            return this.$emit()
-        }
+
     },
 
     mounted(){
@@ -45,10 +44,13 @@ export default {
 
     methods:{
         pushNewData(){
-            this.$emit("addNewTweet", this.value)
+            this.$emit("addNewTweet", this.value, this.id)
             this.$refs.form.reset()
             this.value = ""
         },
+        activeCancel(){
+            this.$emit("FormHandle",this.closed) 
+        }
     }
 }
 </script>

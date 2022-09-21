@@ -49,10 +49,10 @@
                         <span class="ml-1">{{feeds.retweet}}</span>
                     </div>
                 </div>
-                <div class="reply"  >
+                <div class="reply"  v-show="feeds.reply">
                     <p v-if="!feeds.showInput" @click.prevent="FormHandle()">reply</p>
                     <keep-alive>
-                        <tweetForm v-if="feeds.showInput" :closed="true"/>
+                        <tweetForm v-if="feeds.showInput" :id="index" :closed="true"  @addNewTweet="commentHandle"/>
                     </keep-alive>
                 </div>
                 <div class="comment">
@@ -106,8 +106,9 @@ export default {
             // console.log(this.feeds.retweet++)
             this.$emit('retweetHandle', index)
         },
-        commentHandle(data, number){
-            this.$emit("comment", data, number)
+        commentHandle(data, index){
+            this.$emit("comment", data, index)
+            console.log(data,index)
         }
     },
 
