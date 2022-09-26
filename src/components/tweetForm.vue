@@ -9,7 +9,7 @@
             </div>
             <div class="button flex">
                 <button class="rounded-lg bg-red-800 p-2 mr-2" v-if="closed" @click.prevent="activeCancel">Cencel</button>
-                <button class="rounded-lg bg-green-800 p-2 disabled:bg-red-100 disabled:text-white" :disabled="isDisabled" @click.prevent="pushNewData">Submit</button>
+                <button class="rounded-lg bg-green-800 p-2 disabled:bg-red-100 disabled:text-white" :disabled="isDisabled" @click.prevent=" closed ? pushNewComment() : pushNewData()" type="submit">Submit</button>
             </div>
         </div>
     </form>
@@ -45,6 +45,11 @@ export default {
     methods:{
         pushNewData(){
             this.$emit("addNewTweet", this.value, this.id)
+            this.$refs.form.reset()
+            this.value = ""
+        },
+        pushNewComment(){
+            this.$emit("comment", this.value, this.id)
             this.$refs.form.reset()
             this.value = ""
         },

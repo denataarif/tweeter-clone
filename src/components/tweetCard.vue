@@ -1,10 +1,10 @@
 <template lang="">
     <div>
-        <div class="flex mt-4" >
-            <div class="avatar m-1">
-                <profileBorder :url="Imgurl1" scale='40'/>
+        <div :class="tweetCardClass" >
+            <div class="avatar m-2">
+                <profileBorder :url="feeds.profilePict" :class="pictClass" scale='40'/>
             </div>
-            <div class="content w-full">
+            <div class="content w-full " >
                 <div class="profile-name">
                     <span>{{feeds.fullName}}</span> <span>{{feeds.userName}}</span>
                 </div>
@@ -48,11 +48,22 @@
                             <path fill="none" d="M0 0h24v24H0z"/><path d="M6 4h15a1 1 0 0 1 1 1v7h-2V6H6v3L1 5l5-4v3zm12 16H3a1 1 0 0 1-1-1v-7h2v6h14v-3l5 4-5 4v-3z"/></svg>
                         <span class="ml-1">{{feeds.retweet}}</span>
                     </div>
+
+                    <div class="delete" v-if="feeds.userName === '@denataarif'" >
+                        <deleteIcon @click="comment ? deleteCommentHandle(feeds.id) : deleteHandle(feeds.id)"   />
+                    </div>
                 </div>
-                <div class="reply"  v-show="feeds.reply">
-                    <p v-if="!feeds.showInput" @click.prevent="FormHandle()">reply</p>
+                <div class="reply  bg-green-900 rounded-lg mt-2" >
+                    <p v-if="!feeds.showInput" @click.prevent="FormHandle()" class="p-2 font-bold">reply</p>
                     <keep-alive>
-                        <tweetForm v-if="feeds.showInput" :id="index" :closed="true"  @addNewTweet="commentHandle"/>
+                        <tweetForm 
+                            v-if="feeds.showInput" 
+                            :id="index" 
+                            :closed="true" 
+                            @FormHandle="FormHandle"  
+                            @addNewTweet="commentHandle"
+                            @comment="commentHandleTweet"
+                            />
                     </keep-alive>
                 </div>
                 <div class="comment">
@@ -62,6 +73,8 @@
                         :feeds="comment"
                         :index="index"
                         :key="comment"
+                        :comment=true
+                        :fillCom="feeds"
                     />
                     </div>
                 </div>
@@ -72,20 +85,35 @@
 <script>
     import profileBorder from './profileBorder.vue';
     import Imgurl1 from '../assets/Img/a52be707-bbec-4945-9f9c-a1245ecaa8d9.jpg'
+    import deleteIcon from './deleteIcon.vue'
     // import tweetForm from './tweetForm.vue';
 export default {
     name:"tweetCard",
     components:{
-        profileBorder, 
+        profileBorder,  deleteIcon,
     },
-    emits:['comment'],
-    props:{feeds:Object, index:Number},
+    inject:['fullName', 'userName', 'profileImg'],
+    emits:['comment', 'deleteHandle', 'deleteComment'],
+    props:{feeds:Object, index:Number, comment:{type: Boolean, default: false},fillCom:Object},
     data(){
         return{
             Imgurl1,
         }
     },
     methods:{
+        commentHandleTweet(data){
+            this.feeds.reply.unshift({
+                id: this.maxId+1,
+                profilePict: this.profileImg,
+                fullName: this.fullName,
+                userName: this.userName,
+                tweet: data,
+                love:"false",
+                likes: 0,
+                retweet: 0,
+                delete: true,
+            })
+            },
         likesHandle(){
             this.feeds.love =  !this.feeds.love
 
@@ -108,7 +136,19 @@ export default {
         },
         commentHandle(data, index){
             this.$emit("comment", data, index)
-            console.log(data,index)
+            this.feeds.showInput = !this.feeds.showInput
+        },
+        deleteHandle(e){
+            this.$emit("deleteHandle", e)
+            console.log(e)
+        },
+        deleteCommentHandle(dataId){
+            const filterComment = this.fillCom.reply.filter(
+                value => value.id !== dataId
+            )
+            this.fillCom.reply = filterComment
+            // // console.log(filterComment)
+            // console.log(this.fillCom)
         }
     },
 
@@ -116,7 +156,25 @@ export default {
         commentsChildren(){
             const comments = this.feeds
             return comments && comments.length>0
+        },
+        tweetCardClass(){
+            return{
+                "flex mt-4 bg-green-600 rounded-lg p-4 shadow-lg" : this.comment,
+                "flex mt-4 bg-green-700 rounded-lg p-4 shadow-lg" : !this.comment,
+            }
+        },
+        pictClass() {
+            return {
+                "h-16 w-16": !this.comment,
+                "h-10 w-10": this.comment,
+            };
+        },
+        maxId() {
+            const maxId = this.feeds.reply.map(x => x.id)
+            const findMax = Math.max(...maxId)
+            return findMax
         }
+
     }
 
 }
